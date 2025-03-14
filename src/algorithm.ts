@@ -32,12 +32,26 @@ export function toBucketSets(buckets: BucketMap): Array<Set<Flashcard>> {
  * @spec.requires buckets is a valid Array-of-Set representation of flashcard buckets.
  */
 export function getBucketRange(
-  buckets: Array<Set<Flashcard>>
+  buckets: BucketMap
 ): { minBucket: number; maxBucket: number } | undefined {
-  // TODO: Implement this function
-  throw new Error("Implement me!");
-}
+  let minBucket: number | undefined = undefined;
+  let maxBucket: number | undefined = undefined;
 
+  for (const [bucketNumber, flashcards] of buckets.entries()) {
+    if (flashcards.size > 0) {
+      if (minBucket === undefined || bucketNumber < minBucket) {
+        minBucket = bucketNumber;
+      }
+      if (maxBucket === undefined || bucketNumber > maxBucket) {
+        maxBucket = bucketNumber;
+      }
+    }
+  }
+
+  return minBucket !== undefined && maxBucket !== undefined
+    ? { minBucket, maxBucket }
+    : undefined;
+}
 /**
  * Selects cards to practice on a particular day.
  *
