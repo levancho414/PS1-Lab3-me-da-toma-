@@ -77,8 +77,15 @@ export function practice(
   buckets: Array<Set<Flashcard>>,
   day: number
 ): Set<Flashcard> {
-  // TODO: Implement this function
-  throw new Error("Implement me!");
+  const practiceSet = new Set<Flashcard>();
+
+  for (let i = 0; i < buckets.length; i++) {
+    if (day % (i + 1) === 0 && buckets[i]) {
+      buckets[i]!.forEach(card => practiceSet.add(card));
+    }
+  }
+
+  return practiceSet;
 }
 
 /**
@@ -90,14 +97,43 @@ export function practice(
  * @returns updated Map of learning buckets.
  * @spec.requires buckets is a valid representation of flashcard buckets.
  */
+
+
 export function update(
   buckets: BucketMap,
   card: Flashcard,
   difficulty: AnswerDifficulty
 ): BucketMap {
-  // TODO: Implement this function
-  throw new Error("Implement me!");
+  const newBuckets = new Map(buckets);
+
+  let currentBucket = -1;
+  for (const [bucket, flashcards] of newBuckets.entries()) {
+    if (flashcards.has(card)) {
+      currentBucket = bucket;
+      flashcards.delete(card);
+      break;
+    }
+  }
+
+  if (currentBucket === -1) {
+    throw new Error("Card not found in any bucket.");
+  }
+
+  let newBucket = currentBucket;
+  if (difficulty === AnswerDifficulty.Easy) { 
+    newBucket = Math.min(currentBucket + 1, newBuckets.size - 1);
+  } else if (difficulty === AnswerDifficulty.Hard) {  
+    newBucket = Math.max(currentBucket - 1, 0);
+  }
+
+  if (!newBuckets.has(newBucket)) {
+    newBuckets.set(newBucket, new Set<Flashcard>());
+  }
+  newBuckets.get(newBucket)?.add(card); 
+
+  return newBuckets;
 }
+
 
 /**
 * Generates a hint for a flashcard.
@@ -125,11 +161,21 @@ export function getHint(card: Flashcard): string {
 /**
  * Computes statistics about the user's learning progress.
  *
- * @param buckets representation of learning buckets.
- * @param history representation of user's answer history.
- * @returns statistics about learning progress.
- * @spec.requires [SPEC TO BE DEFINED]
+ * @param buckets A BucketMap where keys are bucket numbers and values are sets of flashcards
+ * @param history An array of past answers each with a card, difficulty, and date
+ * @returns An object containing
+ *          - totalCards Total number of unique flashcards
+ *          - bucketDistribution Count of flashcards per bucket
+ *          - averageBucket The mean bucket index
+ *          - answerStats Includes total attempts, difficulty breakdown, and hardest cards
+ *          - recentPerformance Breakdown of the last 10 answers
+ *
+ * @spec.requires buckets must have non-negative integer keys and valid flashcard sets
+ * @spec.requires history must be non-empty, with valid Flashcard, AnswerDifficulty, and Date values
+ * @spec.ensures Returns meaningful statistics, is deterministic, and does not modify inputs
+ * @throws Errors if history is empty or contains invalid entries
  */
+
 export function computeProgress(buckets: any, history: any): any {
   // Replace 'any' with appropriate types
   // TODO: Implement this function (and define the spec!)
