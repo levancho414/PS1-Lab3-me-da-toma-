@@ -100,16 +100,27 @@ export function update(
 }
 
 /**
- * Generates a hint for a flashcard.
- *
- * @param card flashcard to hint
- * @returns a hint for the front of the flashcard.
- * @spec.requires card is a valid Flashcard.
- */
+* Generates a hint for a flashcard.
+*
+* @param card flashcard to hint
+* @returns a  hint for the front of the flashcard 
+*           such as revealing the first letters.
+* requires card is a valid Flashcard with a non-empty front.
+* effects Does not modify the flashcard.
+* ensures The same input always produces the same hint.
+*/ 
 export function getHint(card: Flashcard): string {
-  // TODO: Implement this function (and strengthen the spec!)
-  throw new Error("Implement me!");
+  if (card.front.length === 0) {
+    throw new Error("Cannot generate a hint for an empty flashcard front.");
+  }
+
+  if (card.front.length === 1) {
+    return card.front; // Single-letter words remain unchanged
+  }
+
+  return card.front[0] + "_".repeat(card.front.length - 2) + card.front[card.front.length - 1];
 }
+
 
 /**
  * Computes statistics about the user's learning progress.

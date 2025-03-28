@@ -154,6 +154,7 @@ describe("getBucketRange", () => {
       throw new Error(`Expected { minBucket: 3, maxBucket: 5 } but got ${JSON.stringify(result)}`);
     }
   });
+  
 });
 
 /*
@@ -177,3 +178,62 @@ describe("update()", () => {
     assert.fail("Replace this test case with your own tests based on your testing strategy");
   });
 });
+
+
+describe("getHint()", () => {
+  it("should reveal first and last letter while masking the middle letters", () => {
+    const card: Flashcard = { front: "cat", back: "a small pet", hint: "", tags: [] };
+    assert.strictEqual(getHint(card), "c_t");
+  });
+
+  it("should return the same word unchanged if it has only one letter", () => {
+    const card: Flashcard = {
+      front: "a", back: "first letter of alphabet",
+      hint: "",
+      tags: []
+    };
+    assert.strictEqual(getHint(card), "a");
+  });
+
+  it("should correctly generate hints for longer words", () => {
+    const card: Flashcard = {
+      front: "elephant", back: "a large animal",
+      hint: "",
+      tags: []
+    };
+    assert.strictEqual(getHint(card), "e______t");
+  });
+
+  it("should handle two-letter words without hiding any letters", () => {
+    const card: Flashcard = {
+      front: "at", back: "a common preposition",
+      hint: "",
+      tags: []
+    };
+    assert.strictEqual(getHint(card), "at"); // Both letters are visible
+  });
+
+  it("should correctly handle numbers in historical flashcards", () => {
+    const card: Flashcard = {
+      front: "1945", back: "End of World War II",
+      hint: "",
+      tags: []
+    };
+    assert.strictEqual(getHint(card), "1_4_"); // Alternating digits hidden
+  });
+
+  it("should throw an error when trying to generate a hint for an empty string", () => {
+    const card: Flashcard = {
+      front: "", back: "empty front",
+      hint: "",
+      tags: []
+    };
+    assert.throws(() => getHint(card), "Cannot generate a hint for an empty flashcard front.");
+  });
+});
+
+
+
+
+
+
